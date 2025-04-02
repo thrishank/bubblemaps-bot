@@ -1,10 +1,10 @@
 import { Builder, By, until, WebElement } from "selenium-webdriver";
 import * as fs from "fs";
 
-export async function screenshot(address: string) {
+export async function screenshot(network: string, address: string) {
   const driver = await new Builder().forBrowser("chrome").build();
   try {
-    await driver.get(`https://app.bubblemaps.io/sol/token/${address}`);
+    await driver.get(`https://app.bubblemaps.io/${network}/token/${address}`);
 
     await driver.sleep(5000);
     await driver.wait(until.elementLocated(By.id("svg")), 10000);
@@ -12,7 +12,7 @@ export async function screenshot(address: string) {
     const svgElement: WebElement = await driver.findElement(By.id("svg"));
 
     const elementScreenshot = await svgElement.takeScreenshot();
-    fs.writeFileSync(`${address}.png`, elementScreenshot, "base64");
+    fs.writeFileSync(`img/${address}.png`, elementScreenshot, "base64");
 
     console.log("✅ Screenshot of #svg saved!");
   } catch (err) {
