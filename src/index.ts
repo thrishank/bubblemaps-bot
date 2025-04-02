@@ -25,7 +25,7 @@ bot.start((ctx) => {
 });
 
 bot.command("token", (ctx) => {
-  ctx.reply("Enter contract address: ");
+  ctx.reply("Enter token or contract address: ");
 });
 
 const userMessages = new Map();
@@ -36,7 +36,7 @@ bot.on("text", async (ctx) => {
   userMessages.set(userId, { contractAddress: address });
 
   if (isSolanaPublicKey(address)) {
-    ctx.reply("generating the bubblemap ....");
+    await ctx.reply("⏳ Generating the bubblemap, please wait...");
     await screenshot("sol", address);
     const token_data = await api("sol", address);
     ctx.replyWithPhoto({
@@ -65,8 +65,8 @@ bot.on("text", async (ctx) => {
       ]),
     );
   } else {
-    ctx.reply(
-      "Invalid address. Please enter a valid Solana or Ethereum address.",
+   ctx.reply(
+  	"Invalid address. Please enter a valid contract address. \n\nExample:\n- Solana: HvhG...w2FQ \n- Ethereum: 0x1234...abcd"
     );
   }
 });
@@ -82,7 +82,9 @@ bot.action(/network_/, async (ctx) => {
 
   // @ts-ignore
   const network = ctx.update.callback_query.data.split("_")[1]; // Extract network from callback data
-  ctx.reply(` generating the bubblemaps ....`);
+
+  await ctx.editMessageReplyMarkup(); // Remove buttons after selection
+  await ctx.reply("⏳ Generating the bubblemap, please wait...");
 
   await screenshot(network, contractAddress);
 

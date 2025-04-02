@@ -20,7 +20,6 @@ export function isEthereumAddress(address: string): boolean {
   return ethereumAddressRegex.test(address);
 }
 
-// CG-FQrb4ThLv32HZUqbvDHzqxHR
 export async function api(network: string, address: string) {
   const url = `https://api.coingecko.com/api/v3/coins/id/contract/${address}?x_cg_demo_api_key=CG-FQrb4ThLv32HZUqbvDHzqxHR`;
   const options = {
@@ -62,13 +61,12 @@ export const format_number = (num: number) => {
 
 export const format_token_data = (token_data: any) => {
   return `
-Token Info:
     ${token_data.name}
      Price: ${format_number(token_data.price)}
      Market Cap: ${format_number(token_data.market_cap)}
      FDV: ${format_number(token_data.fully_diluted_valuation)}
      Total Volume: ${format_number(token_data.total_volume)}
-     Price Change (24h): ${token_data.price_change_percentage_24h}%
+     Price Change (24h): ${token_data.price_change_percentage_24h.toFixed(2)}%
      Decentralisation Score: ${token_data.score}
   `;
 };
