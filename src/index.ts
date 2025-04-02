@@ -1,4 +1,4 @@
-import { Markup, Telegraf } from "telegraf";
+import { Context, Markup, Telegraf } from "telegraf";
 import {
   api,
   format_token_data,
@@ -18,14 +18,19 @@ bot.use((ctx, next) => {
   next();
 });
 
-bot.start((ctx) => {
+bot.start((ctx: Context) => {
   return ctx.reply(
-    "Hello! I am a bot that can help you with token information, bubblemaps. Enter the contract address of the token you want to check.",
+    escapeMarkdownV2(
+      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum). \n🔹 If it's an Ethereum token, I'll ask you to choose the network.",
+    ),
+    { parse_mode: "MarkdownV2" },
   );
 });
 
 bot.command("token", (ctx) => {
-  ctx.reply("Enter token or contract address: ");
+  ctx.reply(escapeMarkdownV2("📌 Please enter the contract address:"), {
+    parse_mode: "MarkdownV2",
+  });
 });
 
 const userMessages = new Map();
@@ -35,15 +40,33 @@ bot.on("text", async (ctx) => {
 
   userMessages.set(userId, { contractAddress: address });
 
+  if (!isSolanaPublicKey(address) && !isEthereumAddress(address)) {
+    return ctx.reply(
+      escapeMarkdownV2(
+        "⚠️ Invalid address. Please enter a valid contract address.\n\nExample:\n- Solana: `HvhG...w2FQ` \n- Ethereum: `0x1234...abcd`",
+      ),
+      { parse_mode: "MarkdownV2" },
+    );
+  }
+
   if (isSolanaPublicKey(address)) {
-    await ctx.reply("⏳ Generating the bubblemap, please wait...");
+    await ctx.reply(
+      escapeMarkdownV2("⏳ Generating the bubblemap, please wait..."),
+      {
+        parse_mode: "MarkdownV2",
+      },
+    );
     await screenshot("sol", address);
     const token_data = await api("sol", address);
     ctx.replyWithPhoto({
       source: `${location}/${address}.png`,
     });
-    return ctx.reply(format_token_data(token_data));
-  } else if (isEthereumAddress(address)) {
+    return ctx.reply(escapeMarkdownV2(format_token_data(token_data)), {
+      parse_mode: "MarkdownV2",
+    });
+  }
+
+  if (isEthereumAddress(address)) {
     ctx.reply(
       "Select a network:",
       Markup.inlineKeyboard([
@@ -64,10 +87,6 @@ bot.on("text", async (ctx) => {
         ],
       ]),
     );
-  } else {
-   ctx.reply(
-  	"Invalid address. Please enter a valid contract address. \n\nExample:\n- Solana: HvhG...w2FQ \n- Ethereum: 0x1234...abcd"
-    );
   }
 });
 
@@ -77,14 +96,22 @@ bot.action(/network_/, async (ctx) => {
   const { contractAddress } = userMessages.get(userId) || {};
 
   if (!contractAddress) {
-    return ctx.reply("Please enter a contract address first.");
+    return ctx.reply(
+      escapeMarkdownV2("⚠️ Please enter a contract address first."),
+      {
+        parse_mode: "MarkdownV2",
+      },
+    );
   }
 
   // @ts-ignore
   const network = ctx.update.callback_query.data.split("_")[1]; // Extract network from callback data
 
-  await ctx.editMessageReplyMarkup(); // Remove buttons after selection
-  await ctx.reply("⏳ Generating the bubblemap, please wait...");
+  if (ctx.callbackQuery?.message) {
+    await ctx.editMessageReplyMarkup(undefined); // Remove buttons safely
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay before clearing
+    await ctx.editMessageText("⏳ Generating the bubblemap, please wait...");
+  }
 
   await screenshot(network, contractAddress);
 
@@ -93,7 +120,13 @@ bot.action(/network_/, async (ctx) => {
   });
 
   const token_data = await api(network, contractAddress);
-  ctx.reply(format_token_data(token_data));
+  ctx.reply(escapeMarkdownV2(format_token_data(token_data)), {
+    parse_mode: "MarkdownV2",
+  });
 });
+
+function escapeMarkdownV2(text: string) {
+  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+}
 
 bot.launch().then(() => console.log("Bot is running!"));
