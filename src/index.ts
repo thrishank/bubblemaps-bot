@@ -20,7 +20,7 @@ bot.use((ctx, next) => {
 
 bot.start((ctx) => {
   return ctx.reply(
-    "Hello! I am a bot that can help you with token information. Enter the contract address of the token you want to check.",
+    "Hello! I am a bot that can help you with token information, bubblemaps. Enter the contract address of the token you want to check.",
   );
 });
 
@@ -36,7 +36,7 @@ bot.on("text", async (ctx) => {
   userMessages.set(userId, { contractAddress: address });
 
   if (isSolanaPublicKey(address)) {
-    ctx.reply("generating the bubblemaps ....");
+    ctx.reply("generating the bubblemap ....");
     await screenshot("sol", address);
     const token_data = await api("sol", address);
     ctx.replyWithPhoto({
@@ -80,14 +80,11 @@ bot.action(/network_/, async (ctx) => {
     return ctx.reply("Please enter a contract address first.");
   }
 
-  console.log(ctx.update.callback_query.data);
-
+  // @ts-ignore
   const network = ctx.update.callback_query.data.split("_")[1]; // Extract network from callback data
-  ctx.reply(
-    `You selected the ${network} network for address: ${contractAddress}. generating the bubblemaps ....`,
-  );
+  ctx.reply(` generating the bubblemaps ....`);
 
-   await screenshot(network, contractAddress);
+  await screenshot(network, contractAddress);
 
   ctx.replyWithPhoto({
     source: `${location}/${contractAddress}.png`,

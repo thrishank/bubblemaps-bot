@@ -62,12 +62,13 @@ export const format_number = (num: number) => {
 
 export const format_token_data = (token_data: any) => {
   return `
+Token Info:
     ${token_data.name}
-    📈 Price: ${format_number(token_data.price)}
-    💰 Market Cap: ${format_number(token_data.market_cap)}
-    💵 FDV: ${format_number(token_data.fully_diluted_valuation)}
-    🔄 Total Volume: ${format_number(token_data.total_volume)}
-    📉 Price Change (24h): ${token_data.price_change_percentage_24h}%
-       Decentralisation Score: ${token_data.score}
+     Price: ${format_number(token_data.price)}
+     Market Cap: ${format_number(token_data.market_cap)}
+     FDV: ${format_number(token_data.fully_diluted_valuation)}
+     Total Volume: ${format_number(token_data.total_volume)}
+     Price Change (24h): ${token_data.price_change_percentage_24h}%
+     Decentralisation Score: ${token_data.score}
   `;
 };
