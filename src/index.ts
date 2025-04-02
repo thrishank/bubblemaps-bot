@@ -5,7 +5,7 @@ import {
   isEthereumAddress,
   isSolanaPublicKey,
 } from "./utils";
-import { bot_token } from "./env";
+import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
 
 const bot = new Telegraf(bot_token);
@@ -87,7 +87,7 @@ bot.action(/network_/, async (ctx) => {
 
   await screenshot(network, contractAddress);
   ctx.replyWithPhoto({
-    source: `/Users/thris/Developer/Hackthons/bubblemaps/img/${contractAddress}.png`,
+    source: `${location}/${contractAddress}.png`,
   });
 
   const token_data = await api(contractAddress, network);
