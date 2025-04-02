@@ -48,19 +48,19 @@ bot.on("text", async (ctx) => {
       "Select a network:",
       Markup.inlineKeyboard([
         [
-          Markup.button.callback("ETH", "network_ETH"),
-          Markup.button.callback("BSC", "network_BSC"),
-          Markup.button.callback("FTM", "network_FTM"),
+          Markup.button.callback("ETH", "network_eth"),
+          Markup.button.callback("BSC", "network_bsc"),
+          Markup.button.callback("FTM", "network_ftm"),
         ],
         [
-          Markup.button.callback("AVAX", "network_AVAX"),
-          Markup.button.callback("CRO", "network_CRO"),
-          Markup.button.callback("ARB", "network_ARBI"),
+          Markup.button.callback("AVAX", "network_avax"),
+          Markup.button.callback("CRO", "network_cro"),
+          Markup.button.callback("ARB", "network_arbi"),
         ],
         [
-          Markup.button.callback("POL", "network_POL"),
-          Markup.button.callback("BASE", "network_BASE"),
-          Markup.button.callback("SONIC", "network_SONIC"),
+          Markup.button.callback("POL", "network_poli"),
+          Markup.button.callback("BASE", "network_base"),
+          Markup.button.callback("SONIC", "network_sonic"),
         ],
       ]),
     );
@@ -80,17 +80,20 @@ bot.action(/network_/, async (ctx) => {
     return ctx.reply("Please enter a contract address first.");
   }
 
-  const network = ctx.match[0].split("_")[1]; // Extract network from callback data
+  console.log(ctx.update.callback_query.data);
+
+  const network = ctx.update.callback_query.data.split("_")[1]; // Extract network from callback data
   ctx.reply(
     `You selected the ${network} network for address: ${contractAddress}. generating the bubblemaps ....`,
   );
 
-  await screenshot(network, contractAddress);
+   await screenshot(network, contractAddress);
+
   ctx.replyWithPhoto({
     source: `${location}/${contractAddress}.png`,
   });
 
-  const token_data = await api(contractAddress, network);
+  const token_data = await api(network, contractAddress);
   ctx.reply(format_token_data(token_data));
 });
 
