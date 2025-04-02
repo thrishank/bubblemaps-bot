@@ -18,23 +18,40 @@ export async function screenshot(network: string, address: string) {
     .build();
 
   try {
+    // Set a large browser window size for high-resolution screenshots
+    await driver.manage().window().setRect({ width: 1920, height: 1080 });
+
     await driver.get(`https://app.bubblemaps.io/${network}/token/${address}`);
+    await driver.sleep(8000);
 
-    await driver.sleep(5000);
     await driver.wait(until.elementLocated(By.id("svg")), 10000);
-
     const svgElement: WebElement = await driver.findElement(By.id("svg"));
 
+    // Use JavaScript to set SVG size dynamically for high resolution
+    await driver.executeScript(`
+      const svg = document.getElementById("svg");
+      if (svg) {
+        svg.setAttribute("width", "2000px");
+        svg.setAttribute("height", "2000px");
+      }
+    `);
+
+    // Wait a bit for changes to take effect
+    await driver.sleep(2000);
+
+    // Take a screenshot of the SVG element
+    const elementScreenshot = await svgElement.takeScreenshot();
+
+    // Ensure img directory exists
     const imgDir = path.resolve("img");
     if (!fs.existsSync(imgDir)) {
       fs.mkdirSync(imgDir, { recursive: true });
     }
 
     const screenshotPath = path.join(imgDir, `${address}.png`);
-    const elementScreenshot = await svgElement.takeScreenshot();
     fs.writeFileSync(screenshotPath, elementScreenshot, "base64");
 
-    console.log(`✅ Screenshot saved at: ${screenshotPath}`);
+    console.log(`✅ High-resolution screenshot saved at: ${screenshotPath}`);
   } catch (err) {
     console.error("❌ Error taking screenshot:", err);
   } finally {
