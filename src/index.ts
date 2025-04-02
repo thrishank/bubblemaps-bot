@@ -40,7 +40,7 @@ bot.on("text", async (ctx) => {
     await screenshot("sol", address);
     const token_data = await api("sol", address);
     ctx.replyWithPhoto({
-      source: `/Users/thris/Developer/Hackthons/bubblemaps/img/${address}.png`,
+      source: `${location}/${address}.png`,
     });
     return ctx.reply(format_token_data(token_data));
   } else if (isEthereumAddress(address)) {
