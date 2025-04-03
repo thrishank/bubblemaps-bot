@@ -11,7 +11,10 @@ import { screenshot } from "./ss";
 
 const bot = new Telegraf(bot_token);
 
-const commands = [{ command: "token", description: "Get token info" }];
+const commands = [
+  { command: "help", description: "information about the bot" },
+  { command: "token", description: "Get token bubblemap and info" },
+];
 bot.telegram.setMyCommands(commands);
 
 bot.use((ctx, next) => {
@@ -25,6 +28,12 @@ bot.start((ctx: Context) => {
       "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum). \n🔹For ethereum address i will ask for network",
     ),
     { parse_mode: "MarkdownV2" },
+  );
+});
+
+bot.command("help", (ctx) => {
+  ctx.reply(
+    "Welcome to the bubblemaps bot. Enter any solana or ethereum address to get the bubblemap and token information",
   );
 });
 
@@ -54,7 +63,7 @@ bot.on("text", async (ctx) => {
   if (!isSolanaPublicKey(address) && !isEthereumAddress(address)) {
     return ctx.reply(
       escapeMarkdownV2(
-        "⚠️ Invalid address. Please enter a valid contract address.\n\nExample:\n- Solana: `HvhG...w2FQ` \n- Ethereum: `0x1234...abcd`",
+        "❌  Invalid address. Please enter a valid contract address.\n\nExample:\n- Solana: `HvhG...w2FQ` \n- Ethereum: `0x1234...abcd`",
       ),
       { parse_mode: "MarkdownV2" },
     );
@@ -67,7 +76,13 @@ bot.on("text", async (ctx) => {
 
     const photoSource = `${location}/${address}.png`;
     if (!fs.existsSync(photoSource)) {
-      await screenshot("sol", address);
+      try {
+        await screenshot("sol", address);
+      } catch {
+        return ctx.reply(
+          "❌ Error generating the bubblemap. Please ensure it's a valid mint address and try again.",
+        );
+      }
     }
     const token_data = await api("sol", address);
 
@@ -128,7 +143,13 @@ bot.action(/network_/, async (ctx) => {
   // check if the image already exists
   const photoSource = `${location}/${contractAddress}.png`;
   if (!fs.existsSync(photoSource)) {
-    await screenshot(network, contractAddress);
+    try {
+      await screenshot(network, contractAddress);
+    } catch {
+      return ctx.reply(
+        `❌ Error generating the bubblemap for ${contractAddress}, network: ${network}. Please ensure it's a valid contract address and network and try again.`,
+      );
+    }
   }
   const token_data = await api(network, contractAddress);
 

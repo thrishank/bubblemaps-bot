@@ -22,9 +22,9 @@ export async function screenshot(network: string, address: string) {
     await driver.manage().window().setRect({ width: 1920, height: 1080 });
 
     await driver.get(`https://app.bubblemaps.io/${network}/token/${address}`);
-    await driver.sleep(8000);
+    await driver.sleep(5000);
 
-    await driver.wait(until.elementLocated(By.id("svg")), 10000);
+    await driver.wait(until.elementLocated(By.id("svg")), 8000);
     const svgElement: WebElement = await driver.findElement(By.id("svg"));
 
     // Use JavaScript to set SVG size dynamically for high resolution
@@ -51,11 +51,11 @@ export async function screenshot(network: string, address: string) {
     const screenshotPath = path.join(imgDir, `${address}.png`);
     fs.writeFileSync(screenshotPath, elementScreenshot, "base64");
 
-    console.log(`✅ High-resolution screenshot saved at: ${screenshotPath}`);
+    console.log(`✅ screenshot saved at: ${screenshotPath}`);
   } catch (err) {
     console.error("❌ Error taking screenshot:", err);
+    throw new Error(`Error taking screenshot: ${err}`);
   } finally {
     await driver.quit();
   }
 }
-

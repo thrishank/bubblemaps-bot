@@ -29,27 +29,32 @@ export async function api(network: string, address: string) {
     },
   };
 
-  const res = await fetch(url, options);
-  const data = await res.json();
-  const score_res = await fetch(
-    `https://api-legacy.bubblemaps.io/map-metadata?chain=${network}&token=${address}`,
-  );
-  const score_data = await score_res.json();
-  const score = score_data.decentralisation_score;
-  const token_data = {
-    name: data.name,
-    symbol: data.symbol,
-    price: data.market_data?.current_price?.usd,
-    market_cap: data.market_data?.market_cap?.usd,
-    fully_diluted_valuation: data.market_data?.fully_diluted_valuation?.usd,
-    total_volume: data.market_data?.total_volume?.usd,
-    price_change_percentage_24h: data.market_data?.price_change_percentage_24h,
-    price_change_percentage_7d: data.market_data?.price_change_percentage_7d,
-    score,
-    url: `https://app.bubblemaps.io/${network}/token/${address}`,
-  };
-  console.log(token_data);
-  return token_data;
+  try {
+    const res = await fetch(url, options);
+    const data = await res.json();
+    const score_res = await fetch(
+      `https://api-legacy.bubblemaps.io/map-metadata?chain=${network}&token=${address}`,
+    );
+    const score_data = await score_res.json();
+    const score = score_data.decentralisation_score;
+    const token_data = {
+      name: data.name,
+      symbol: data.symbol,
+      price: data.market_data?.current_price?.usd,
+      market_cap: data.market_data?.market_cap?.usd,
+      fully_diluted_valuation: data.market_data?.fully_diluted_valuation?.usd,
+      total_volume: data.market_data?.total_volume?.usd,
+      price_change_percentage_24h:
+        data.market_data?.price_change_percentage_24h,
+      price_change_percentage_7d: data.market_data?.price_change_percentage_7d,
+      score,
+      url: `https://app.bubblemaps.io/${network}/token/${address}`,
+    };
+    console.log(token_data);
+    return token_data;
+  } catch (err) {
+    console.error("Error fetching token data:", err);
+  }
 }
 
 export const format_number = (num: number) => {
