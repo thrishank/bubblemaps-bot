@@ -38,12 +38,15 @@ export async function api(network: string, address: string) {
   const score = score_data.decentralisation_score;
   const token_data = {
     name: data.name,
+    symbol: data.symbol,
     price: data.market_data?.current_price?.usd,
     market_cap: data.market_data?.market_cap?.usd,
     fully_diluted_valuation: data.market_data?.fully_diluted_valuation?.usd,
     total_volume: data.market_data?.total_volume?.usd,
     price_change_percentage_24h: data.market_data?.price_change_percentage_24h,
+    price_change_percentage_7d: data.market_data?.price_change_percentage_7d,
     score,
+    url: `https://app.bubblemaps.io/${network}/token/${address}`,
   };
   console.log(token_data);
   return token_data;
@@ -59,14 +62,15 @@ export const format_number = (num: number) => {
   }
 };
 
-export const format_token_data = (token_data: any) => {
+export const format_token_data_html = (token_data: any) => {
   return `
-    ${token_data.name}
-     Price: ${format_number(token_data.price)}
-     Market Cap: ${format_number(token_data.market_cap)}
-     FDV: ${format_number(token_data.fully_diluted_valuation)}
-     Total Volume: ${format_number(token_data.total_volume)}
-     Price Change (24h): ${token_data.price_change_percentage_24h.toFixed(2)}%
-     Decentralisation Score: ${token_data.score}
+    <b>${token_data.name} (${token_data.symbol.toUpperCase()})</b>
+Price: ${format_number(token_data.price)} 
+24hr Change: ${token_data.price_change_percentage_24h.toFixed(2)}%
+7d Change: ${token_data.price_change_percentage_7d.toFixed(2)}%
+Market Cap: ${format_number(token_data.market_cap)}
+Volume: ${format_number(token_data.total_volume)}
+Decentralisation Score: ${token_data.score}\n
+🚀 <a href="${token_data.url}">View on Bubblemaps</a>
   `;
 };

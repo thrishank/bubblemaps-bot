@@ -1,7 +1,8 @@
 import { Context, Markup, Telegraf } from "telegraf";
+import * as fs from "fs";
 import {
   api,
-  format_token_data,
+  format_token_data_html,
   isEthereumAddress,
   isSolanaPublicKey,
 } from "./utils";
@@ -21,7 +22,7 @@ bot.use((ctx, next) => {
 bot.start((ctx: Context) => {
   return ctx.reply(
     escapeMarkdownV2(
-      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum). \n🔹 If it's an Ethereum token, I'll ask you to choose the network.",
+      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum). \n🔹For ethereum address i will ask for network",
     ),
     { parse_mode: "MarkdownV2" },
   );
@@ -35,8 +36,18 @@ bot.command("token", (ctx) => {
 
 const userMessages = new Map();
 bot.on("text", async (ctx) => {
-  const address = ctx.message.text.trim();
   const userId = ctx.from.id;
+  const isGroupChat = ctx.chat.type.includes("group");
+  const botUsername = (await bot.telegram.getMe()).username;
+  const messageText = ctx.message.text.trim();
+
+  // If it's a group chat, ensure the bot is tagged
+  if (isGroupChat && !messageText.includes(`@${botUsername}`)) {
+    return;
+  }
+
+  // Extract address from the message
+  const address = messageText.replace(`@${botUsername}`, "").trim();
 
   userMessages.set(userId, { contractAddress: address });
 
@@ -50,20 +61,26 @@ bot.on("text", async (ctx) => {
   }
 
   if (isSolanaPublicKey(address)) {
-    await ctx.reply(
-      escapeMarkdownV2("⏳ Generating the bubblemap, please wait..."),
+    const message = await ctx.reply(
+      "⏳ Generating the bubblemap, please wait...",
+    );
+
+    const photoSource = `${location}/${address}.png`;
+    if (!fs.existsSync(photoSource)) {
+      await screenshot("sol", address);
+    }
+    const token_data = await api("sol", address);
+
+    await ctx.deleteMessage(message.message_id);
+    await ctx.replyWithPhoto(
       {
-        parse_mode: "MarkdownV2",
+        source: photoSource,
+      },
+      {
+        caption: format_token_data_html(token_data),
+        parse_mode: "HTML",
       },
     );
-    await screenshot("sol", address);
-    const token_data = await api("sol", address);
-    ctx.replyWithPhoto({
-      source: `${location}/${address}.png`,
-    });
-    return ctx.reply(escapeMarkdownV2(format_token_data(token_data)), {
-      parse_mode: "MarkdownV2",
-    });
   }
 
   if (isEthereumAddress(address)) {
@@ -96,12 +113,7 @@ bot.action(/network_/, async (ctx) => {
   const { contractAddress } = userMessages.get(userId) || {};
 
   if (!contractAddress) {
-    return ctx.reply(
-      escapeMarkdownV2("⚠️ Please enter a contract address first."),
-      {
-        parse_mode: "MarkdownV2",
-      },
-    );
+    return ctx.reply("Please enter a contract address first.");
   }
 
   // @ts-ignore
@@ -109,20 +121,28 @@ bot.action(/network_/, async (ctx) => {
 
   if (ctx.callbackQuery?.message) {
     await ctx.editMessageReplyMarkup(undefined); // Remove buttons safely
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay before clearing
-    await ctx.editMessageText("⏳ Generating the bubblemap, please wait...");
   }
 
-  await screenshot(network, contractAddress);
+  await ctx.editMessageText("⏳ Generating the bubblemap, please wait...");
 
-  ctx.replyWithPhoto({
-    source: `${location}/${contractAddress}.png`,
-  });
-
+  // check if the image already exists
+  const photoSource = `${location}/${contractAddress}.png`;
+  if (!fs.existsSync(photoSource)) {
+    await screenshot(network, contractAddress);
+  }
   const token_data = await api(network, contractAddress);
-  ctx.reply(escapeMarkdownV2(format_token_data(token_data)), {
-    parse_mode: "MarkdownV2",
-  });
+
+  await ctx.replyWithPhoto(
+    {
+      source: photoSource,
+    },
+    {
+      caption: format_token_data_html(token_data),
+      parse_mode: "HTML",
+    },
+  );
+
+  await ctx.deleteMessage();
 });
 
 function escapeMarkdownV2(text: string) {
