@@ -1,13 +1,13 @@
 import { Context, Markup, Telegraf } from "telegraf";
 import * as fs from "fs";
 import {
-  api,
   format_token_data_html,
   isEthereumAddress,
   isSolanaPublicKey,
 } from "./utils";
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
+import { price } from "./price";
 
 const bot = new Telegraf(bot_token);
 
@@ -83,8 +83,8 @@ bot.on("text", async (ctx) => {
       "⏳ Generating the bubblemap, please wait...",
     );
 
+    const token_data = await price("sol", address);
     const photoSource = `${location}/${address}_sol.png`;
-
     if (!fs.existsSync(photoSource)) {
       try {
         await screenshot("sol", address);
@@ -94,9 +94,13 @@ bot.on("text", async (ctx) => {
         );
       }
     }
-    const token_data = await api("sol", address);
 
     await ctx.deleteMessage(message.message_id);
+
+    if (!token_data) {
+      return ctx.replyWithPhoto({ source: photoSource });
+    }
+
     await ctx.replyWithPhoto(
       {
         source: photoSource,
@@ -150,6 +154,8 @@ bot.action(/network_/, async (ctx) => {
 
   await ctx.editMessageText("⏳ Generating the bubblemap, please wait...");
 
+  const token_data = await price(network, contractAddress);
+
   // check if the image already exists
   const photoSource = `${location}/${contractAddress}_${network}.png`;
   if (!fs.existsSync(photoSource)) {
@@ -161,7 +167,11 @@ bot.action(/network_/, async (ctx) => {
       );
     }
   }
-  const token_data = await api(network, contractAddress);
+
+  if (!token_data) {
+    await ctx.deleteMessage();
+    return ctx.replyWithPhoto({ source: photoSource });
+  }
 
   await ctx.replyWithPhoto(
     {

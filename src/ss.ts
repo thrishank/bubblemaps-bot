@@ -52,9 +52,10 @@ export async function screenshot(network: string, address: string) {
     fs.writeFileSync(screenshotPath, elementScreenshot, "base64");
 
     console.log(`✅ screenshot saved at: ${screenshotPath}`);
+    return screenshotPath;
   } catch (err) {
     console.error("❌ Error taking screenshot:", err);
-    throw new Error(`Error taking screenshot: ${err}`);
+    return null;
   } finally {
     await driver.quit();
   }
