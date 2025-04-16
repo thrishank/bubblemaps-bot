@@ -23,11 +23,20 @@ bot.use((ctx, next) => {
 });
 
 bot.start((ctx: Context) => {
+  const bot_username = "Bubblemaps123_bot";
   return ctx.reply(
     escapeMarkdownV2(
-      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum). \n🔹For ethereum address i will ask for network",
+      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum).\n\n🔹 In groups, tag me with the contract address.",
     ),
-    { parse_mode: "MarkdownV2" },
+    {
+      parse_mode: "MarkdownV2",
+      ...Markup.inlineKeyboard([
+        Markup.button.url(
+          "➕ Add to Group",
+          `https://t.me/${bot_username}?startgroup=true`,
+        ),
+      ]),
+    },
   );
 });
 
@@ -74,7 +83,8 @@ bot.on("text", async (ctx) => {
       "⏳ Generating the bubblemap, please wait...",
     );
 
-    const photoSource = `${location}/${address}.png`;
+    const photoSource = `${location}/${address}_sol.png`;
+
     if (!fs.existsSync(photoSource)) {
       try {
         await screenshot("sol", address);
@@ -141,7 +151,7 @@ bot.action(/network_/, async (ctx) => {
   await ctx.editMessageText("⏳ Generating the bubblemap, please wait...");
 
   // check if the image already exists
-  const photoSource = `${location}/${contractAddress}.png`;
+  const photoSource = `${location}/${contractAddress}_${network}.png`;
   if (!fs.existsSync(photoSource)) {
     try {
       await screenshot(network, contractAddress);

@@ -48,7 +48,7 @@ export async function screenshot(network: string, address: string) {
       fs.mkdirSync(imgDir, { recursive: true });
     }
 
-    const screenshotPath = path.join(imgDir, `${address}.png`);
+    const screenshotPath = path.join(imgDir, `${address}_${network}.png`);
     fs.writeFileSync(screenshotPath, elementScreenshot, "base64");
 
     console.log(`✅ screenshot saved at: ${screenshotPath}`);
