@@ -30,7 +30,12 @@ export const format_number = (num: number) => {
   }
 };
 
-export const format_token_data_html = (token_data: any, holders?: number) => {
+export const format_token_data_html = (
+  token_data: any,
+  holders?: number,
+  rug_score?: number,
+) => {
+  const rugScoreDot = rug_score && rug_score > 300 ? "🔴" : "🟢";
   return `
     <b>${token_data.name} (${token_data.symbol.toUpperCase()})</b>
 Price: ${format_number(token_data.price)} 
@@ -39,6 +44,7 @@ Price: ${format_number(token_data.price)}
 Market Cap: ${format_number(token_data.market_cap)}
 Volume: ${format_number(token_data.total_volume)} 
 ${holders ? "Holders: " + holders : ""}
+${rug_score ? `Rug Check Score: ${rugScoreDot} ${rug_score}` : ""}
 Decentralisation Score: ${token_data.score}\n
 🚀 <a href="${token_data.url}">View on Bubblemaps</a>
   `;

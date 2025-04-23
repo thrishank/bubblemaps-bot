@@ -8,13 +8,19 @@ import {
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
 import { price } from "./price";
-import { token_meta } from "./solscan";
+import { token_meta, trending_tokens } from "./solscan";
+import { rug_check } from "./rug_check";
 
 const bot = new Telegraf(bot_token);
 
 const commands = [
   { command: "help", description: "information about the bot" },
   { command: "token", description: "Get token bubblemap and info" },
+  // {
+  //   command: "rug_check",
+  //   description: "Detailed rug check analysis for a solana token",
+  // },
+  { command: "trending", description: "Get Trending Tokens on Solana" },
 ];
 bot.telegram.setMyCommands(commands);
 
@@ -53,6 +59,17 @@ bot.command("token", (ctx) => {
   });
 });
 
+bot.command("trending", async (ctx) => {
+  const res = await trending_tokens();
+  let message = "<b>Trending Token List</b>\n\n";
+
+  res.data.forEach((token: any, index: number) => {
+    message += `<a href="https://app.bubblemaps.io/sol/token/${token.address}">${index + 1}. ${token.name}</a> - <code>${token.address}</code>\n`;
+  });
+
+  return ctx.replyWithHTML(message);
+});
+
 const userMessages = new Map();
 bot.on("text", async (ctx) => {
   const userId = ctx.from.id;
@@ -86,6 +103,7 @@ bot.on("text", async (ctx) => {
 
     const token_data = await price("sol", address);
     const holders = await token_meta(address);
+    const rug_score = await rug_check(address);
     const photoSource = `${location}/${address}_sol.png`;
     if (!fs.existsSync(photoSource)) {
       try {
@@ -108,7 +126,7 @@ bot.on("text", async (ctx) => {
         source: photoSource,
       },
       {
-        caption: format_token_data_html(token_data, holders),
+        caption: format_token_data_html(token_data, holders, rug_score?.score),
         parse_mode: "HTML",
       },
     );
