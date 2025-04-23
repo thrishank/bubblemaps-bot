@@ -8,6 +8,7 @@ import {
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
 import { price } from "./price";
+import { token_meta } from "./solscan";
 
 const bot = new Telegraf(bot_token);
 
@@ -42,7 +43,7 @@ bot.start((ctx: Context) => {
 
 bot.command("help", (ctx) => {
   ctx.reply(
-    "Welcome to the bubblemaps bot. Enter any solana or ethereum address to get the bubblemap and token information",
+    "Welcome to the bubblemaps bot. Enter any solana or ethereum address to get the bubblemap and token information. In groups enter the address and tag the bot",
   );
 });
 
@@ -84,6 +85,7 @@ bot.on("text", async (ctx) => {
     );
 
     const token_data = await price("sol", address);
+    const holders = await token_meta(address);
     const photoSource = `${location}/${address}_sol.png`;
     if (!fs.existsSync(photoSource)) {
       try {
@@ -106,7 +108,7 @@ bot.on("text", async (ctx) => {
         source: photoSource,
       },
       {
-        caption: format_token_data_html(token_data),
+        caption: format_token_data_html(token_data, holders),
         parse_mode: "HTML",
       },
     );

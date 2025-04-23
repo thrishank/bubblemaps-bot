@@ -30,14 +30,15 @@ export const format_number = (num: number) => {
   }
 };
 
-export const format_token_data_html = (token_data: any) => {
+export const format_token_data_html = (token_data: any, holders?: number) => {
   return `
     <b>${token_data.name} (${token_data.symbol.toUpperCase()})</b>
 Price: ${format_number(token_data.price)} 
 24hr Change: ${token_data.price_change_percentage_24h.toFixed(2)}%
 7d Change: ${token_data.price_change_percentage_7d.toFixed(2)}%
 Market Cap: ${format_number(token_data.market_cap)}
-Volume: ${format_number(token_data.total_volume)}
+Volume: ${format_number(token_data.total_volume)} 
+${holders ? "Holders: " + holders : ""}
 Decentralisation Score: ${token_data.score}\n
 🚀 <a href="${token_data.url}">View on Bubblemaps</a>
   `;
