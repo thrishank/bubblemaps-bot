@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/6c163562-801d-4ef3-8250-abd82721b9ea
 <a href="https://app.bubblemaps.io">
   <img src="https://app.bubblemaps.io/img/bubblemaps.51902376.svg" alt="Bubble Maps" title="BubbleMaps" align="right" height="60" />
 </a>
