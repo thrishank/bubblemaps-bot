@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/6c163562-801d-4ef3-8250-abd82721b9ea
 <a href="https://app.bubblemaps.io">
   <img src="https://app.bubblemaps.io/img/bubblemaps.51902376.svg" alt="Bubble Maps" title="BubbleMaps" align="right" height="60" />
 </a>
@@ -24,6 +26,8 @@ You can:
 
 - DM the bot with a token address
 - Add it to a group and tag it with a contract address
+
+https://github.com/user-attachments/assets/978e1e2f-78f8-493f-82fb-8fa7c49999e2
 
 ## Setup
 
