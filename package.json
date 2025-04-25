@@ -1,20 +1,13 @@
 {
   "name": "bubblemaps",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "chromedriver": "^134.0.5",
     "selenium-webdriver": "^4.30.0",
-    "telegraf": "^4.16.3",
-    "uuid": "^11.1.0"
+    "telegraf": "^4.16.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

@@ -16,12 +16,9 @@ const bot = new Telegraf(bot_token);
 const commands = [
   { command: "help", description: "information about the bot" },
   { command: "token", description: "Get token bubblemap and info" },
-  // {
-  //   command: "rug_check",
-  //   description: "Detailed rug check analysis for a solana token",
-  // },
   { command: "trending", description: "Get Trending Tokens on Solana" },
 ];
+
 bot.telegram.setMyCommands(commands);
 
 bot.use((ctx, next) => {
