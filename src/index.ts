@@ -8,7 +8,7 @@ import {
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
 import { price } from "./price";
-import { token_meta, trending_tokens } from "./solscan";
+import { token_meta } from "./utils";
 import { rug_check } from "./rug_check";
 
 const bot = new Telegraf(bot_token);
@@ -16,7 +16,6 @@ const bot = new Telegraf(bot_token);
 const commands = [
   { command: "help", description: "information about the bot" },
   { command: "token", description: "Get token bubblemap and info" },
-  { command: "trending", description: "Get Trending Tokens on Solana" },
 ];
 
 bot.telegram.setMyCommands(commands);
@@ -54,17 +53,6 @@ bot.command("token", (ctx) => {
   ctx.reply(escapeMarkdownV2("📌 Please enter the contract address:"), {
     parse_mode: "MarkdownV2",
   });
-});
-
-bot.command("trending", async (ctx) => {
-  const res = await trending_tokens();
-  let message = "<b>Trending Token List</b>\n\n";
-
-  res.data.forEach((token: any, index: number) => {
-    message += `<a href="https://app.bubblemaps.io/sol/token/${token.address}">${index + 1}. ${token.name}</a> - <code>${token.address}</code>\n`;
-  });
-
-  return ctx.replyWithHTML(message);
 });
 
 const userMessages = new Map();
