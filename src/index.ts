@@ -33,15 +33,9 @@ bot.start((ctx: Context) => {
   return ctx.reply(
     escapeMarkdownV2(`🌟 Hey there! I'm your go-to bot for token insights and stunning bubble maps! 🚀 
 
-💬 What I can do for you:
-- Analyze token info on Solana or Ethereum
-- Create awesome bubble maps to visualize data
-
 📩 How to get started:
-- Send me a toke mint address for Solana and for Ethereum send the contract address and select network after sharing
-- In group chats, just tag me with the contract address
-
-Let's dive into the world of tokens together! 🎉`),
+- Send me a token mint address for Solana and for Ethereum send the contract address and select network after sharing
+- In group chats, just tag me with the contract address`),
     {
       parse_mode: "MarkdownV2",
       ...Markup.inlineKeyboard([
