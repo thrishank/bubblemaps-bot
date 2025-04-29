@@ -21,7 +21,9 @@ const commands = [
 bot.telegram.setMyCommands(commands);
 
 bot.use((ctx, next) => {
-  console.log(ctx.message);
+  console.log("from: ", ctx.message?.from.username);
+  // @ts-ignore
+  console.log("message: ", ctx.message?.text);
   next();
 });
 
@@ -103,6 +105,14 @@ bot.on("text", async (ctx) => {
     await ctx.deleteMessage(message.message_id);
 
     if (!token_data) {
+      if (!fs.existsSync(photoSource)) {
+        return ctx.replyWithHTML(
+          `❌ The Bubblemap has not been request for this token. <a href="https://bubblemaps.io/get-premium/">Get Premium</a> if you want to request new maps. 
+
+<a href="https://bubblemaps.io">LEARNMORE</a>
+`,
+        );
+      }
       return ctx.replyWithPhoto({ source: photoSource });
     }
 
@@ -175,6 +185,14 @@ bot.action(/network_/, async (ctx) => {
 
   if (!token_data) {
     await ctx.deleteMessage();
+    if (!fs.existsSync(photoSource)) {
+      return ctx.replyWithHTML(
+        `❌ The Bubblemap has not been request for this token. <a href="https://bubblemaps.io/get-premium/">Get Premium</a> if you want to request new maps. 
+
+<a href="https://bubblemaps.io">LEARNMORE</a>
+`,
+      );
+    }
     return ctx.replyWithPhoto({ source: photoSource });
   }
 

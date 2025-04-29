@@ -25,6 +25,8 @@ export const format_number = (num: number) => {
     return `$${(num / 1e9).toFixed(2)}B`; // Billion
   } else if (num >= 1e6) {
     return `$${(num / 1e6).toFixed(2)}M`; // Million
+  } else if (num > 0 && num < 1) {
+    return `$${num.toString()}`; // Return small numbers as is
   } else {
     return `$${num.toFixed(2)}`; // Default formatting
   }

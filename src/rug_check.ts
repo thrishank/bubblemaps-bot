@@ -9,6 +9,7 @@ interface TokenCheck {
   }>;
   score: number;
 }
+
 const BASE_URL = "https://api.rugcheck.xyz/v1";
 export async function rug_check(mint: string): Promise<TokenCheck | null> {
   try {
@@ -17,7 +18,6 @@ export async function rug_check(mint: string): Promise<TokenCheck | null> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error: any) {
     console.error(
