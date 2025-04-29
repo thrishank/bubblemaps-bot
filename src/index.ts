@@ -30,14 +30,17 @@ bot.use((ctx, next) => {
 // start command
 bot.start((ctx: Context) => {
   const bot_username = "Bubblemaps123_bot";
-  return ctx.reply(
-    escapeMarkdownV2(`🌟 Hey there! I'm your go-to bot for token insights and stunning bubble maps! 🚀 
+  return ctx.replyWithHTML(
+    `🌟 Hey there! I'm your go-to bot for token insights and stunning bubble maps! 🚀 
 
 📩 How to get started:
 - Send me a token mint address for Solana and for Ethereum send the contract address and select network after sharing
-- In group chats, just tag me with the contract address`),
+- In group chats, just tag me with the contract address
+
+- Bubblemaps (SOL): <code>FQgtfugBdpFN7PZ6NdPrZpVLDBrPGxXesi4gVu3vErhY</code>
+- Bubblemaps (BSC): <code>0x7d814b9ed370ec0a502edc3267393bf62d891b62</code>
+`,
     {
-      parse_mode: "MarkdownV2",
       ...Markup.inlineKeyboard([
         Markup.button.url(
           "➕ Add to Group",
