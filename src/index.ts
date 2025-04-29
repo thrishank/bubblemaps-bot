@@ -27,12 +27,21 @@ bot.use((ctx, next) => {
   next();
 });
 
+// start command
 bot.start((ctx: Context) => {
   const bot_username = "Bubblemaps123_bot";
   return ctx.reply(
-    escapeMarkdownV2(
-      "👋 Hello! I can help you check token information and generate bubble maps. \n\n🔹 Send me a *contract address* (Solana or Ethereum).\n\n🔹 In groups, tag me with the contract address.",
-    ),
+    escapeMarkdownV2(`🌟 Hey there! I'm your go-to bot for token insights and stunning bubble maps! 🚀 
+
+💬 What I can do for you:
+- Analyze token info on Solana or Ethereum
+- Create awesome bubble maps to visualize data
+
+📩 How to get started:
+- Send me a toke mint address for Solana and for Ethereum send the contract address and select network after sharing
+- In group chats, just tag me with the contract address
+
+Let's dive into the world of tokens together! 🎉`),
     {
       parse_mode: "MarkdownV2",
       ...Markup.inlineKeyboard([
@@ -52,12 +61,11 @@ bot.command("help", (ctx) => {
 });
 
 bot.command("token", (ctx) => {
-  ctx.reply(escapeMarkdownV2("📌 Please enter the contract address:"), {
-    parse_mode: "MarkdownV2",
-  });
+  return ctx.reply("📌 Enter the contract address (CA) :");
 });
 
-const userMessages = new Map();
+const userMessages = new Map(); // A In-Memory Map to store address entered by the user.
+// Map is used retrive the address after the user clicks on the network buttons.
 bot.on("text", async (ctx) => {
   const userId = ctx.from.id;
   const isGroupChat = ctx.chat.type.includes("group");
@@ -72,6 +80,7 @@ bot.on("text", async (ctx) => {
   // Extract address from the message
   const address = messageText.replace(`@${botUsername}`, "").trim();
 
+  // push the address to the map
   userMessages.set(userId, { contractAddress: address });
 
   if (!isSolanaPublicKey(address) && !isEthereumAddress(address)) {
