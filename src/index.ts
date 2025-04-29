@@ -142,7 +142,7 @@ bot.on("text", async (ctx) => {
           Markup.button.callback("ARB", "network_arbi"),
         ],
         [
-          Markup.button.callback("POL", "network_poli"),
+          Markup.button.callback("POL", "network_poly"),
           Markup.button.callback("BASE", "network_base"),
           Markup.button.callback("SONIC", "network_sonic"),
         ],
