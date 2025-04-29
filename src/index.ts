@@ -7,8 +7,7 @@ import {
 } from "./utils";
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
-import { price } from "./price";
-import { token_meta } from "./utils";
+import { price, token_meta } from "./token";
 import { rug_check } from "./rug_check";
 
 const bot = new Telegraf(bot_token);

@@ -51,23 +51,3 @@ Decentralisation Score: ${token_data.score}\n
 🚀 <a href="${token_data.url}">View on Bubblemaps</a>
   `;
 };
-
-const requestOptions = {
-  headers: {
-    method: "GET",
-    token: "",
-  },
-};
-
-export async function token_meta(address: string) {
-  try {
-    const res = await fetch(
-      `https://pro-api.solscan.io/v2.0/token/meta?address=${address}`,
-      requestOptions,
-    );
-    const data = await res.json();
-    return data.data.holder;
-  } catch (err) {
-    console.error(err);
-  }
-}
