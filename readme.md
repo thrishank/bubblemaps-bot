@@ -8,7 +8,7 @@ A powerful Telegram bot that visualizes token distribution and provides in-depth
 
 ## Features
 
-- Send any contract address (Solana or EVM)
+- Send any solana token ticker or mint address and for etherium networks send contract address  
 - Get a bubblemap screenshot generated from Bubblemaps
 - Display's key token information- price, market cap, volume, and more
 - Decentralization Score (via Bubblemaps Score API) and rug check score for solana tokens
