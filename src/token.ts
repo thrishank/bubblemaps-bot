@@ -1,3 +1,4 @@
+import fs from "fs";
 export async function price(network: string, address: string) {
   const coingeckoUrl = `https://api.coingecko.com/api/v3/coins/id/contract/${address}?x_cg_demo_api_key=CG-FQrb4ThLv32HZUqbvDHzqxHR`;
   const bubblemapsUrl = `https://api-legacy.bubblemaps.io/map-metadata?chain=${network}&token=${address}`;
@@ -72,3 +73,25 @@ export async function token_meta(address: string) {
     console.error(err);
   }
 }
+
+export let tokens = new Map<string, string>();
+
+export async function token_tickers() {
+  try {
+    console.log("Fetching tokens from Jupiter API...");
+    const response = await fetch("https://lite-api.jup.ag/tokens/v1/all");
+    const data = await response.json();
+
+    data.map((token: { symbol: string; address: string; tags: string[] }) => {
+      if (token.tags.includes("verified") || token.tags.includes("strict"))
+        tokens.set(token.symbol.replace(/\s+/g, ""), token.address);
+    });
+    console.log("Tokens fetched successfully.");
+  } catch (error) {
+    console.error("Error fetching or processing tokens:", error);
+    throw error;
+  }
+}
+
+token_tickers();
+setInterval(token_tickers, 1000 * 60 * 60 * 24); // Fetch Day

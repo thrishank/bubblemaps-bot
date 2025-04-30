@@ -7,7 +7,7 @@ import {
 } from "./utils";
 import { bot_token, location } from "./env";
 import { screenshot } from "./ss";
-import { price, token_meta } from "./token";
+import { price, token_meta, tokens } from "./token";
 import { rug_check } from "./rug_check";
 
 const bot = new Telegraf(bot_token);
@@ -33,7 +33,7 @@ bot.start((ctx: Context) => {
     `🌟 Hey there! I'm your go-to bot for token insights and stunning bubble maps! 🚀 
 
 📩 How to get started:
-- Send me a token mint address for Solana and for Ethereum send the contract address and select network after sharing
+- Send me a token ticker or mint address for Solana and for Ethereum send the contract address and select network after sharing
 - In group chats, just tag me with the contract address
 
 - Bubblemaps (SOL): <code>FQgtfugBdpFN7PZ6NdPrZpVLDBrPGxXesi4gVu3vErhY</code>
@@ -74,10 +74,14 @@ bot.on("text", async (ctx) => {
   }
 
   // Extract address from the message
-  const address = messageText.replace(`@${botUsername}`, "").trim();
+  let address = messageText.replace(`@${botUsername}`, "").trim();
 
-  // push the address to the map
-  userMessages.set(userId, { contractAddress: address });
+  // check if the address is a valid solana ticker and get the address
+  const isTicker = tokens.has(address.replace(/\s+/g, ""));
+  if (isTicker) {
+    address = tokens.get(address)!;
+    console.log(address);
+  }
 
   if (!isSolanaPublicKey(address) && !isEthereumAddress(address)) {
     return ctx.reply(
@@ -87,6 +91,9 @@ bot.on("text", async (ctx) => {
       { parse_mode: "MarkdownV2" },
     );
   }
+
+  // push the address to the map
+  userMessages.set(userId, { contractAddress: address });
 
   if (isSolanaPublicKey(address)) {
     const message = await ctx.reply(
