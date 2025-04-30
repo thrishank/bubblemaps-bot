@@ -36,7 +36,7 @@ bot.start((ctx: Context) => {
 - Send me a token ticker or mint address for Solana and for Ethereum send the contract address and select network after sharing
 - In group chats, just tag me with the contract address
 
-- Bubblemaps (SOL): <code>FQgtfugBdpFN7PZ6NdPrZpVLDBrPGxXesi4gVu3vErhY</code>
+- Bubblemaps (SOL): <code>FQgtfugBdpFN7PZ6NdPrZpVLDBrPGxXesi4gVu3vErhY</code>, <code>BMT</code>
 - Bubblemaps (BSC): <code>0x7d814b9ed370ec0a502edc3267393bf62d891b62</code>
 `,
     {
